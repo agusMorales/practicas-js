@@ -9,7 +9,7 @@
 
 // 1) PRIMER CASO:
 // - Pregunte al usuario su nombre a través de un prompt. 
-// - Con el valor de su nombre, envíe un mensaje a través de un alert que le de la bienvenida. Ej: "Bienvenido a nuestro ecommerce Javier."
+// - Con el valor de su nombre, envíe un mensaje a través de un alert que le de la bienvenida. Ej: "Bienvenido a nuestro ecommerce Javier." -----------------preguntar en caso de que no ingrese un nombre 
 // - Pregúntele al usuario, con un nuevo prompt, qué categoría de producto le interesaría comprar, ej: "¿Qué desea comprar? Elija la opción 1 si son remeras, opción 2 si son pantalones". La frase y la forma de introducir los datos queda a criterio de ustedes. Lo necesario es que a partir del valor ingresado, se valide qué mostrar luego.
 // - Valide el valor ingresado. En el caso de que sea, por ejemplo, 1, muestre por confirm el artículo remera, con un mensaje de este estilo: "Usted eligió remera. Su precio es de $x. Desea comprar este artículo?"
 // - En el caso de cancelar, terminar el algoritmo con un nuevo alert: "Muchas gracias por su visita"
@@ -17,6 +17,64 @@
 // FIN DEL EJERCICIO
 // RECUERDEN ENCAPSULAR LA LÓGICA DENTRO DE FUNCIONES
 // PUEDEN HACER UNA FUNCIÓN QUE CONTENGA UN ALERT Y QUE EL TEXTO DEL ALERT SEA PASADO COMO PARÁMETRO, COSA DE NO REPETIR LOS ALERTS Y APRENDER A HACER LÓGICA REUTILIZABLE.
+
+function procesoCompraDelUsuario() {
+    nombreUsuario();
+    bienvenida_(nombreUsuario() , "Bienvenido a nuestro ecommerce");
+    seleccionarCategoria()
+}
+
+function nombreUsuario() {
+    const nombre = prompt("Por favor, ingrese su nombre:");
+    return nombre;
+}
+
+function mostrarMensaje(mensaje) {
+    alert(mensaje);
+}
+
+function bienvenida_(usuario,mensajeBienvenida) {
+    if (usuario!==null && usuario!=="") { //hice esto en el caso de que ingrese un null o un string vacio
+        mostrarMensaje(`${mensajeBienvenida} ${usuario}`);
+    } else {
+        mostrarMensaje("No ingresaste un nombre válido.");
+    }
+}
+
+function seleccionarCategoria() {
+    let precio= 0;
+    let producto=""
+    const opcion = prompt("¿Qué desea comprar? Elija la opción: 1 Remeras o 2 Pantalones");
+    if (opcion === "1") {
+        precio=12000;
+        producto="Remera"
+        confirmarProducto_Precio(producto,precio);
+    } else if (opcion === "2") {
+        precio=22000;
+        producto="Pantalon"
+        confirmarProducto_Precio(producto,precio);;
+    } else {
+        mostrarMensaje("Opción no válida. Por favor, elija una opción válida.");
+    }//agrege un caso en el que el usuario no ingrese uno de esos valores 
+}
+
+
+function confirmarProducto_Precio(articuloVenta,precioArticulo) {
+    const confirmacion = confirm(`Usted eligió ${articuloVenta}. Su precio es de $${precioArticulo}. Desea comprar este artículo?`);
+    return definirCompra(confirmacion);
+}
+
+function definirCompra(bool) {
+    if (bool) {
+        const direccion = prompt("Ingrese su dirección para poder realizar el envío del pedido:");
+        mostrarMensaje(`Su artículo será enviado a: ${direccion}`);
+        mostrarMensaje("Muchas gracias por su compra.");
+    } else {
+        mostrarMensaje("Muchas gracias por su visita");
+    }
+}
+
+
 
 // 2) SEGUNDO CASO:
 // - Pregunte al usuario su nombre a través de un prompt. 
@@ -27,3 +85,31 @@
 // FIN DEL EJERCICIO
 // RECUERDEN ENCAPSULAR LA LÓGICA DENTRO DE FUNCIONES
 // PUEDEN HACER UNA FUNCIÓN QUE CONTENGA UN PROMPT Y QUE EL TEXTO DEL ALERT SEA PASADO COMO PARÁMETRO, COSA DE NO REPETIR LOS ALERTS Y APRENDER A HACER LÓGICA REUTILIZABLE.
+
+function general(){
+    nombreUsuario()
+    bienvenida_(nombreUsuario() , "Bienvenido a la red");
+}
+
+function calificarTweets() {
+    let meGusta = 0;
+    let noMeGusta = 0;
+    for (let i = 1; i <= 5; i++) {
+        const tweet = prompt(`Calificación para el tweet ${i}:Por favor, ingrese "me gusta" o "no me gusta":`);
+        const resultado = calificarTweet(tweet, meGusta, noMeGusta);
+        meGusta = resultado.meGusta;
+        noMeGusta = resultado.noMeGusta;
+    }
+    mostrarMensaje(`Del siguiente contenido, te gustaron ${meGusta} y no te gustaron ${noMeGusta}.`);
+}
+
+
+function calificarTweet(tweet, meGusta, noMeGusta) {
+    if (tweet === "me gusta") {
+            meGusta++;
+    } else if (tweet === "no me gusta") {
+        noMeGusta++;
+    }
+
+    return { meGusta, noMeGusta };
+}
