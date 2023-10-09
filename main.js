@@ -19,15 +19,23 @@
 // PUEDEN HACER UNA FUNCIÓN QUE CONTENGA UN ALERT Y QUE EL TEXTO DEL ALERT SEA PASADO COMO PARÁMETRO, COSA DE NO REPETIR LOS ALERTS Y APRENDER A HACER LÓGICA REUTILIZABLE.
 
 function procesoCompraDelUsuario() {
-    nombreUsuario();
-    bienvenida_(nombreUsuario() , "Bienvenido a nuestro ecommerce");
+    bienvenida_(nombreUsuario , "Bienvenido a nuestro ecommerce");
     seleccionarCategoria()
 }
 
-function nombreUsuario() {
-    const nombre = prompt("Por favor, ingrese su nombre:");
+
+
+function pedirNombre() {
+    let nombre;
+  
+    do {
+      nombre = prompt("Por favor, ingresa tu nombre:");
+    } while (nombre === null || nombre.trim() === "");
+  
     return nombre;
-}
+  }
+  
+  const nombreUsuario = pedirNombre();
 
 function mostrarMensaje(mensaje) {
     alert(mensaje);
@@ -44,12 +52,12 @@ function bienvenida_(usuario,mensajeBienvenida) {
 function seleccionarCategoria() {
     let precio= 0;
     let producto=""
-    const opcion = prompt("¿Qué desea comprar? Elija la opción: 1 Remeras o 2 Pantalones");
-    if (opcion === "1") {
+    const opcion = parseFloat(prompt("¿Qué desea comprar? Elija la opción: 1 Remeras o 2 Pantalones"));
+    if (opcion === 1) {
         precio=12000;
         producto="Remera"
         confirmarProducto_Precio(producto,precio);
-    } else if (opcion === "2") {
+    } else if (opcion === 2) {
         precio=22000;
         producto="Pantalon"
         confirmarProducto_Precio(producto,precio);;
@@ -74,7 +82,7 @@ function definirCompra(bool) {
     }
 }
 
-
+procesoCompraDelUsuario()
 
 // 2) SEGUNDO CASO:
 // - Pregunte al usuario su nombre a través de un prompt. 
@@ -86,17 +94,25 @@ function definirCompra(bool) {
 // RECUERDEN ENCAPSULAR LA LÓGICA DENTRO DE FUNCIONES
 // PUEDEN HACER UNA FUNCIÓN QUE CONTENGA UN PROMPT Y QUE EL TEXTO DEL ALERT SEA PASADO COMO PARÁMETRO, COSA DE NO REPETIR LOS ALERTS Y APRENDER A HACER LÓGICA REUTILIZABLE.
 
-function general(){
-    nombreUsuario()
-    bienvenida_(nombreUsuario() , "Bienvenido a la red");
+function general(){ //cambiar el nombre
+    bienvenida_(nombreUsuario , "Bienvenido a la red");
+    calificarTweets();
 }
 
 function calificarTweets() {
     let meGusta = 0;
     let noMeGusta = 0;
     for (let i = 1; i <= 5; i++) {
-        const tweet = prompt(`Calificación para el tweet ${i}:Por favor, ingrese "me gusta" o "no me gusta":`);
-        const resultado = calificarTweet(tweet, meGusta, noMeGusta);
+        while (!calificacionValida) {
+            tweet = prompt(`Calificación para el tweet ${i}: Por favor, ingrese "me gusta" o "no me gusta":`);     // hacer una funcion para que quede mas mas entendible y legible
+            
+            if (tweet === "me gusta" || tweet === "no me gusta") {
+                calificacionValida = true;
+            } else {
+                mostrarMensaje("Por favor, ingresa una calificación válida (me gusta/no me gusta).");
+            }
+        }
+        const resultado = calificacionDeTweets(tweet, meGusta, noMeGusta,i);
         meGusta = resultado.meGusta;
         noMeGusta = resultado.noMeGusta;
     }
@@ -104,12 +120,17 @@ function calificarTweets() {
 }
 
 
-function calificarTweet(tweet, meGusta, noMeGusta) {
+function calificacionDeTweets(tweet, meGusta, noMeGusta,i) {
     if (tweet === "me gusta") {
             meGusta++;
     } else if (tweet === "no me gusta") {
         noMeGusta++;
+    } else {
+        mostrarMensaje("Por favor, ingresa una calificación válida (me gusta/no me gusta).");
+        i--;
     }
-
     return { meGusta, noMeGusta };
 }
+
+
+general()
