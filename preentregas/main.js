@@ -104,7 +104,7 @@ function calificarTweets() {
     let noMeGusta = 0;
     for (let i = 1; i <= 5; i++) {
         while (!calificacionValida) {
-            tweet = prompt(`Calificación para el tweet ${i}: Por favor, ingrese "me gusta" o "no me gusta":`);     // hacer una funcion para que quede mas mas entendible y legible
+            tweet = prompt(`Calificación para el tweet ${i}: Por favor, ingrese "me gusta" o "no me gusta":`);     // hacer una funcion para que quede mas mas entendible y legibles
             
             if (tweet === "me gusta" || tweet === "no me gusta") {
                 calificacionValida = true;
