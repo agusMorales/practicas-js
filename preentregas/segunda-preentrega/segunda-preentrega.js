@@ -12,111 +12,102 @@
 // 5) Con el valor obtenido del punto 4, se deberá buscar el producto deseado y mediante un confirm, mostrar el nombre, descripción y precio del producto. Se deberá preguntar al usuario si se desea completar la compra. En caso de que no se encuentre el producto, se deberá dar la chance de ingresarlo nuevamente.
 // 6) Con el valor obtenido del punto 5), se deberá visualizar un alert que agradezca la compra con una supuesta fecha de entrega -usando date-, en el caso de que la acepte, si la cancela, se agradecerá la interacción.
 
-  
-  function filtrarProductosPorCategorias(categoria1, categoria2) {
-    return products.filter((producto) => producto.category === categoria1 || producto.category === categoria2);
-  }
-  
-  const cat1 = "jewelery";
-  const cat2 = "electronics";
-  
-  function mostrarProductosConAlert(array) {
-    const productosOrdenados = array.slice().sort((a, b) => a.title.localeCompare(b.title));
-  
-    let mensaje = "Productos disponibles (ordenados por título):\n";
-  
-    for (const producto of productosOrdenados) {
-      mensaje += `\nProducto: ${producto.title}\nDescripción: ${producto.description}\nPrecio: $${producto.price}\n`;
-    }
-  
-    alert(mensaje);
-  }
-  
-  const categoríasDisponibles = filtrarProductosPorCategorias(cat1, cat2).map((producto) => producto.category);
-  const categoríasTexto = categoríasDisponibles.join(', ');
+const categoriaElegida = ["electronics", "jewelery"];
+const mensajeBienvenida = "¡Bienvenido a nuestro ecommerce!";
+const saludo = "¡Gracias por visitarnos!";
 
-  console.log(filtrarProductosPorCategorias(cat1, cat2).sort((a, b) => a.title.localeCompare(b.title)))
-  function mostrarProductosEnConsola(array) {
-    const productosOrdenados = array.slice().sort((a, b) => a.title.localeCompare(b.title));
-    
-    console.log("Productos disponibles (ordenados por título):");
-    
-    for (const producto of productosOrdenados) {
-      console.log(`\nProducto: ${producto.title}\nDescripción: ${producto.description}\nPrecio: $${producto.price}`);
+function filtrarProd(products, categories) {
+  return products.filter((product) => categories.includes(product.category));
+}
+
+function ordenarProductosPorTitulo(products) {
+  return products.sort((a, b) => a.title.localeCompare(b.title));
+}
+function mostrarProductos(productosOrdenados) {
+  return productosOrdenados
+    .map((producto, indice) => `${indice + 1}) ${producto.title}`)
+    .join("\n");
+}
+
+function fechaEntrega(diasHabiles) {
+  let diaEntrega = new Date();
+  while (diasHabiles > 0) {
+    diaEntrega.setDate(diaEntrega.getDate() + 1);
+    if (diaEntrega.getDay() !== 0 && diaEntrega.getDay() !== 6) {
+      diasHabiles--;
     }
   }
-  
-  alert("¡Bienvenido a nuestra tienda en línea! Esperamos que encuentres lo que estás buscando.");
-  alert("Categorías de productos disponibles: " + categoríasTexto);
-  
-  mostrarProductosConAlert(filtrarProductosPorCategorias(cat1, cat2));
-  
-  const productoElegido = prompt("Ingrese el nombre del producto que desea comprar:");
-  
-  const productoSeleccionado = products.find((producto) => producto.title === productoElegido);
-  
-  if (productoSeleccionado) {
-    alert(`Ha seleccionado: ${productoSeleccionado.title}\nDescripción: ${productoSeleccionado.description}\nPrecio: $${productoSeleccionado.price}`);
-    
-    const fechaEntrega = new Date();
-    fechaEntrega.setDate(fechaEntrega.getDate() + 7); // Supongamos que la entrega se realizará en 7 días.
-  
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    alert(`Gracias por su compra. Su producto llegará el ${fechaEntrega.toLocaleDateString(undefined, options)}`);
+  return diaEntrega;
+}
+
+// Se le pide al usuario elegir un producto de la lista, si el nro no es valido le pide que iontente nuevamente hasta que ingrese uno valido o cancele.
+
+function productos_listado_(mensajeProductos, productosOrdenados) {
+  let estaProducto = false;
+  let productoElegido = parseInt(
+    prompt(
+      `Estos son los productos disponibles, con entrega a domicilio en 5 días hábiles:\nELIJA EL NÚMERO DEL PRODUCTO\n${mensajeProductos}`
+    )
+  );
+  let productoSeleccionado;
+
+  while (!estaProducto) {
+    if (productoElegido > 0 && productoElegido <= productosOrdenados.length) {
+      productoSeleccionado = productosOrdenados[productoElegido - 1];
+      estaProducto = true;
+    } else {
+      estaProducto = manejarSelecciónNoVálida(mensajeProductos);
+    }
+  }
+
+  return productoSeleccionado;
+}
+
+function manejarSelecciónNoVálida(mensajeProductos) {
+  const respuestaUsuario = confirm(
+    "El número de producto seleccionado no es válido. ¿Desea intentarlo nuevamente?"
+  );
+  if (respuestaUsuario) {
+    const nuevoProductoElegido = prompt(
+      `Estos son los productos disponibles:\n${mensajeProductos}\n¿Qué producto desea comprar?`
+    );
+    if (nuevoProductoElegido === null) {
+      alert(saludo);
+      return true; // Mostrar mensaje de salida
+    } else {
+      return false; // Intentar nuevamente
+    }
   } else {
-    alert("El producto seleccionado no se encuentra en la lista. Por favor, inténtelo de nuevo.");
+    alert(saludo);
+    return true; // Mostrar mensaje de salida
   }
-  
-  
-// const ropaDeHombre = products.filter(( products ) => {
-//     return products.category === "men's clothing"
-// })
+}
 
-// const joyas = products.filter(( products ) => {
-//     return products.category === "jewelery"
-// })
+// Creo la funcion para mostrarle al usuario los detalles del producto elegido y pregunto si desea realizar la compra. En caso de cancelar le muestro el alert. Si el usuario acepta se muestra el mensaje proporcionandole una fecha estimada de entrega.
+function confirmarCompra(productoSeleccionado) {
+  const confirmacionCompra = confirm(
+    `Nombre: ${productoSeleccionado.title}\nDescripción: ${productoSeleccionado.description}\nPrecio: $${productoSeleccionado.price}\n¿Desea completar la compra?`
+  );
+  if (confirmacionCompra) {
+    const fechaAEntregar = fechaEntrega(15);
+    alert(
+      `¡Gracias por su compra! La fecha estimada de entrega es ${fechaAEntregar.toLocaleDateString()}.`
+    );
+  } else {
+    alert(saludo);
+  }
+}
 
-
-// const electronica = products.filter(( products ) => {
-//     return products.category === "electronics"
-// })
-
-
-// const ropaDeMujer = products.filter(( products ) => {
-//     return products.category === "women's clothing"
-// })
-
-
-// function mostrarProductosEnPagina(array) {
-//     document.write("<h2>Productos disponibles:</h2>");
-
-//     array.forEach(producto => {
-//         document.write('<div class="card">');
-//         document.write('<h3>' + validarPropiedad(producto, "title") + '</h3>');
-//         document.write('<div class="container-img">');
-//         document.write('<img src="' + validarPropiedad(producto, "image") + '" alt="' + validarPropiedad(producto, "title") + '">');
-//         document.write('</div>');
-//         document.write('<button class="boton-compra">' + validarPropiedad(producto, "price").toString() + '</button>');
-//         document.write('</div>');
-//     });
-// }
-
-// const categoriaNumero = parseInt(prompt("Ingresa un número para seleccionar la categoría:\n1 - Ropa de Hombre\n2 - Joyas\n3 - Electrónica\n4 - Ropa de Mujer"));
-
-// let arraySeleccionado;
-
-// if (categoriaNumero === 1) {
-//   arraySeleccionado = ropaDeHombre;
-// } else if (categoriaNumero === 2) {
-//   arraySeleccionado = joyas;
-// } else if (categoriaNumero === 3) {
-//   arraySeleccionado = electronica;
-// } else if (categoriaNumero === 4) {
-//   arraySeleccionado = ropaDeMujer;
-// } else {
-//   console.log("Número de categoría no válido");
-// }
-
-
-
-// mostrarProductosEnPagina(arraySeleccionado.sort((a, b) => a.title.localeCompare(b.title)));
+// Uso del código
+const productosFiltrados = filtrarProd(products, categoriaElegida);
+alert(mensajeBienvenida);
+alert(`Aca encontraras:electrodomestico y Joyas`);
+const productosOrdenados = ordenarProductosPorTitulo(productosFiltrados);
+const mostrarProductosAlert = mostrarProductos(productosOrdenados);
+const productoSeleccionado = productos_listado_(
+  mostrarProductosAlert,
+  productosOrdenados
+);
+if (productoSeleccionado) {
+  confirmarCompra(productoSeleccionado);
+}
